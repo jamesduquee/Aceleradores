@@ -1,0 +1,5 @@
+CLASS zbp_bsj_i_so_header DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zbsj_i_so_header.
+ENDCLASS.
+
+CLASS zbp_bsj_i_so_header IMPLEMENTATION.
+ENDCLASS.

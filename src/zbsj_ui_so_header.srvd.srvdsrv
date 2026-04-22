@@ -1,0 +1,11 @@
+@EndUserText.label: 'Service Definition for Sales Order'
+@ObjectModel.leadingEntity.name: 'ZBSJ_C_SO_HEADER'
+define service ZBSJ_UI_SO_HEADER {
+  expose ZBSJ_C_SO_HEADER    as SalesOrder;
+  expose ZBSJ_C_SO_ITEM      as SalesOrderItem;
+  expose ZBSJ_C_MATERIAL     as Material;
+  expose ZBSJ_I_CUSTOMER     as Customer;
+  expose ZBSJ_I_COMPANY      as Company;
+  expose ZBSJ_I_ORDER_TYPES  as OrderTypeVH;
+  expose ZBSJ_I_SALES_ORG_VH as SalesOrgVH;
+}

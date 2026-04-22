@@ -1,0 +1,38 @@
+managed implementation in class zbp_bsj_i_material unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZBSJ_I_MATERIAL alias Material
+persistent table zbsj_material
+draft table zbsj_d_material
+lock master
+total etag LastChangedAt
+authorization master ( global, instance )
+etag master LocalLastChangedAt
+{
+  create ( authorization : global );
+  update;
+  delete;
+
+  field ( mandatory : create ) MaterialId;
+  field ( readonly : update ) MaterialId;
+  field ( readonly ) LocalLastChangedAt, LastChangedAt;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  mapping for zbsj_material
+  {
+    MaterialId         = material_id;
+    MaterialName       = material_name;
+    BaseUom            = base_uom;
+    UnitPrice          = unit_price;
+    Currency           = currency;
+    TaxCode            = tax_code;
+    IsActive           = is_active;
+    LocalLastChangedAt = local_last_changed_at;
+    LastChangedAt      = last_changed_at;
+  }
+}

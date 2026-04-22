@@ -1,0 +1,39 @@
+managed implementation in class zbp_bsj_i_customer unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZBSJ_I_CUSTOMER alias Customer
+persistent table zbsj_customer
+draft table zbsj_d_customer
+lock master
+total etag LastChangedAt
+authorization master ( global, instance )
+etag master LocalLastChangedAt
+{
+  create ( authorization : global );
+  update;
+  delete;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+  field ( mandatory:create, readonly:update ) CustomerId;
+  field ( readonly ) LastChangedAt, LocalLastChangedAt;
+
+  mapping for zbsj_customer
+    {
+      CustomerId   = customer_id;
+      CustomerName = customer_name;
+      Phone        = phone;
+      Email        = email;
+      Address      = address;
+      City         = city;
+      Country      = country;
+      CreditLimit  = credit_limit;
+      Currency     = currency;
+      IsActive     = is_active;
+      LocalLastChangedAt = locallastchangedat;
+      LastChangedAt      = last_changed_at;
+    }
+}

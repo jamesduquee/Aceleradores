@@ -1,0 +1,150 @@
+managed implementation in class zbp_bsj_i_so_header unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZBSJ_I_SO_HEADER alias SalesOrder
+persistent table zbsj_so_header
+draft table zbsj_d_so_header
+lock master
+total etag LastChangedAt
+authorization master ( global, instance )
+etag master LocalLastChangedAt
+{
+  internal action RecalcTotalPrice;
+  determination calculateTotalPrice on modify { create; field Currency; }
+  determination setInitialStatus on modify { create; }
+  determination calculateOverallStatus on modify { create; field DeliveryStatus, BillingStatus, PaymentStatus; }
+  side effects
+  {
+    entity _Item affects field GrossAmount, field NetAmount, field TaxAmount;
+    field MaterialId affects entity _Material;
+    action setDelivered affects entity _Item;
+    action setNotDelivered affects entity _Item;
+  }
+
+
+  create ( authorization : global );
+  update;
+  delete;
+
+  action CreateMaterial parameter ZBSJ_A_MATERIAL_PARAM result [1] $self;
+  action createNewCustomer parameter ZBSJ_A_NEW_CUSTOMER result [1] $self;
+
+  action ( features : instance ) setDelivered result [1] $self;
+  action ( features : instance ) setPaid result [1] $self;
+  action ( features : instance ) setBilled result [1] $self;
+
+  action ( features : instance ) setNotDelivered result [1] $self;
+  action ( features : instance ) setNotPaid result [1] $self;
+  action ( features : instance ) setNotBilled result [1] $self;
+
+  validation validateSalesOrg on save { create; field SalesOrg; }
+  validation validateDates on save { create; update; field ReqDeliveryDate, OrderDate; }
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation validateSalesOrg;
+    validation validateDates;
+  }
+
+  field ( mandatory : create, readonly : update ) SalesOrderId;
+  field ( readonly ) GrossAmount, NetAmount, TaxAmount, LocalCreatedAt, LocalCreatedBy, LocalLastChangedAt, LocalLastChangedBy, LastChangedAt;
+
+  field ( readonly ) DeliveryStatus, BillingStatus, PaymentStatus, DeliveryCriticality, PaymentCriticality, DeliveryStatusText, PaymentStatusText;
+  field ( readonly ) BillingCriticality, BillingStatusText;
+  field ( readonly ) OverallStatus, OverallCriticality, OverallStatusText;
+  association _Item { create; with draft; }
+
+  mapping for zbsj_so_header
+    {
+      SalesOrderId        = sales_order_id;
+      MaterialId          = material_id;
+      OrderType           = order_type;
+      CompanyCode         = company_code;
+      SalesOrg            = sales_org;
+      CustomerId          = customer_id;
+      OrderDate           = order_date;
+      ReqDeliveryDate     = req_delivery_date;
+      NetAmount           = net_amount;
+      TaxAmount           = tax_amount;
+      GrossAmount         = gross_amount;
+      Currency            = currency;
+      OverallStatus       = overall_status;
+      DeliveryStatus      = delivery_status;
+      BillingStatus       = billing_status;
+      PaymentStatus       = payment_status;
+      LocalCreatedBy      = local_created_by;
+      LocalCreatedAt      = local_created_at;
+      LocalLastChangedBy  = local_last_changed_by;
+      LocalLastChangedAt  = local_last_changed_at;
+      LastChangedAt       = last_changed_at;
+      DeliveryCriticality = delivery_criticality;
+      PaymentCriticality  = payment_criticality;
+      DeliveryStatusText  = delivery_status_text;
+      PaymentStatusText   = payment_status_text;
+      BillingCriticality  = billing_criticality;
+      BillingStatusText   = billing_status_text;
+      OverallCriticality = overall_criticality;
+      OverallStatusText  = overall_status_text;
+    }
+}
+
+define behavior for ZBSJ_I_SO_ITEM alias SalesOrderItem
+persistent table zbsj_so_item
+draft table zbsj_d_so_item
+lock dependent by _Header
+authorization dependent by _Header
+etag master LocalLastChangedAt
+early numbering
+{
+  determination calculateTotalPrice on modify { create; delete; field Quantity, NetValue, TaxValue; }
+  determination determineMaterialDefaults on modify { field MaterialId; }
+  determination setInitialItemStatus on modify { create; }
+  determination setInitialUom on modify { create; }
+  determination setInitialQuantity on modify { create; }
+
+  side effects
+  {
+    field Quantity affects field _Header.GrossAmount, field _Header.NetAmount, field _Header.TaxAmount;
+    field NetValue affects field _Header.GrossAmount, field _Header.NetAmount, field _Header.TaxAmount, field GrossValue;
+    field TaxValue affects field _Header.GrossAmount, field _Header.NetAmount, field _Header.TaxAmount, field GrossValue;
+    field MaterialId affects field Uom, field NetValue, field GrossValue,
+        field _Header.GrossAmount, field _Header.NetAmount, field _Header.TaxAmount;
+
+
+
+  }
+
+  update;
+  delete;
+//  field ( mandatory : create, readonly : update ) ItemNo;
+
+  field ( readonly ) ItemNo, SalesOrderId, GrossValue, LocalCreatedAt, LocalCreatedBy, LocalLastChangedAt, LocalLastChangedBy, ItemStatusText;
+
+  field ( readonly ) ItemStatus;
+
+  association _Header { with draft; }
+
+  mapping for zbsj_so_item
+    {
+      SalesOrderId       = sales_order_id;
+      ItemNo             = item_no;
+      MaterialId         = material_id;
+      Uom                = uom;
+      Currency           = currency;
+      Quantity           = quantity;
+      NetValue           = net_value;
+      TaxValue           = tax_value;
+      GrossValue         = gross_value;
+      ItemStatus         = item_status;
+      LocalCreatedBy     = local_created_by;
+      LocalCreatedAt     = local_created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      ItemStatusText = item_status_text;
+    }
+
+}

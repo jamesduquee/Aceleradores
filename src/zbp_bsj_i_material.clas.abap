@@ -1,0 +1,5 @@
+CLASS zbp_bsj_i_material DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zbsj_i_material.
+ENDCLASS.
+
+CLASS zbp_bsj_i_material IMPLEMENTATION.
+ENDCLASS.

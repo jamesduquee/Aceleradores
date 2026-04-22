@@ -1,0 +1,35 @@
+projection implementation in class zbp_bsj_c_so_header unique;
+strict ( 2 );
+use draft;
+use side effects;
+
+define behavior for ZBSJ_C_SO_HEADER alias SalesOrder
+{
+  use create;
+  use update;
+  use delete;
+  use action CreateMaterial;
+  use action createNewCustomer;
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+  use action setDelivered;
+  use action setPaid;
+  use action setBilled;
+   use action setNotDelivered;
+  use action setNotPaid;
+  use action setNotBilled;
+
+  use association _Item { create; with draft; }
+}
+
+define behavior for ZBSJ_C_SO_ITEM alias SalesOrderItem
+use etag
+{
+  use update;
+  use delete;
+
+  use association _Header { with draft; }
+}

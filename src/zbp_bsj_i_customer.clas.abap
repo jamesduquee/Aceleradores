@@ -1,0 +1,5 @@
+CLASS zbp_bsj_i_customer DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zbsj_i_customer.
+ENDCLASS.
+
+CLASS zbp_bsj_i_customer IMPLEMENTATION.
+ENDCLASS.
