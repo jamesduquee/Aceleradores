@@ -1,0 +1,76 @@
+managed implementation in class zbp_cit_usi_22bm007 unique;
+strict ( 2 );
+
+define behavior for ZCIT_USI_22BM007 alias User
+persistent table zcit_us
+lock master
+authorization master ( instance )
+etag master LocalLastChangedAt
+{
+  create ( authorization : global );
+  update;
+  delete;
+
+  field ( readonly : update ) EmpId, DevId;
+  field ( readonly ) LocalCreatedBy, LocalLastChangedAt;
+  field ( mandatory : create ) EmpId, DevId, DevDescription;
+
+  association _UserDev { create ( features : instance ); }
+
+  // Logic to read excel data into associated entity
+  action ( features : instance ) uploadExcelData result [1] $self;
+  action ( features : instance ) DownloadExcel result [1] $self;
+
+  // Change File Status During Creation of new record
+  determination FillFileStatus on modify { field EmpId, DevId; }
+
+  // Change File Status When file is selected
+  determination FillSelectedStatus on modify { field Attachment; }
+
+  // For reloading UI after data has been uploaded
+  side effects
+  {
+    field Attachment affects field FileStatus;
+    action uploadExcelData affects $self, entity _UserDev;
+  }
+
+  mapping for zcit_us
+    {
+      EmpId              = emp_id;
+      DevId              = dev_id;
+      DevDescription     = dev_description;
+      Filename           = filename;
+      Attachment         = attachment;
+      Mimetype           = mimetype;
+      FileStatus         = file_status;
+      TemplateStatus     = template_status;
+      LocalCreatedBy     = local_created_by;
+      LocalCreatedAt     = local_created_at;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+      LocalLastChangedBy = local_last_changed_by;
+    }
+}
+
+define behavior for ZCIT_USI_DEV_22BM007 alias UserDev
+persistent table zcit_us_dev
+lock dependent by _User
+authorization dependent by _User
+//etag master
+{
+  update;
+  delete;
+
+  field ( readonly ) EmpId, DevId, SerialNo;
+
+  association _User;
+
+  mapping for zcit_us_dev
+    {
+      EmpId      = emp_id;
+      DevId      = dev_id;
+      SerialNo   = serial_no;
+      ObjectType = object_type;
+      ObjectName = object_name;
+    }
+}

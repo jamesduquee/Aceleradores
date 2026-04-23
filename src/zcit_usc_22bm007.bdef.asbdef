@@ -1,0 +1,22 @@
+projection;
+strict ( 2 );
+
+define behavior for ZCIT_USC_22BM007 alias User
+{
+  use create;
+  use update;
+  use delete;
+
+  use action uploadExcelData;
+  use action DownloadExcel;
+
+  use association _UserDev { create; }
+}
+
+define behavior for ZCIT_USC_DEV_22BM007 alias UserDev
+{
+  use update;
+  use delete;
+
+  use association _User;
+}
