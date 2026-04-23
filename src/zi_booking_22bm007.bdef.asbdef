@@ -1,0 +1,45 @@
+managed implementation in class zbp_i_booking_22bm007 unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_Booking_22bm007 alias Booking
+persistent table zbook_22bm007
+draft table zbook_22bm007_d
+lock master total etag last_changed_at
+authorization master ( instance )
+etag master local_last_changed_at
+{
+  create;
+  update;
+  delete;
+
+  draft action Edit;
+  draft action Activate;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  field ( readonly, numbering : managed ) booking_uuid;
+  field ( readonly ) status;
+
+  action ( features : instance ) assignDriver result [1] $self;
+  action ( features : instance ) startTrip    result [1] $self;
+  action ( features : instance ) completeTrip result [1] $self;
+
+  mapping for zbook_22bm007
+  {
+    booking_uuid = booking_uuid;
+    booking_id = booking_id;
+    customer_name = customer_name;
+    pickup_location = pickup_location;
+    drop_location = drop_location;
+    status = status;
+    booking_date = booking_date;
+    driver_id = driver_id;
+    vehicle_number = vehicle_number;
+    fare_amount = fare_amount;
+    currency_code = currency_code;
+    last_changed_at = last_changed_at;
+    local_last_changed_at = local_last_changed_at;
+  }
+}
