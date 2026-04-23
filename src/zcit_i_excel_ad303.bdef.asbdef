@@ -1,0 +1,69 @@
+managed implementation in class zbp_cit_i_excel_ad303 unique;
+strict ( 2 );
+
+define behavior for zcit_i_excel_ad303 alias User //alias <alias_name>
+persistent table zcit_excel_ad303
+lock master
+authorization master ( instance )
+etag master LocalLastChangedAt
+//etag master <field_name>
+{
+  create ( authorization : global );
+  update;
+  delete;
+ field ( readonly : update ) EmpId, DevId;
+  field ( readonly ) LocalCreatedBy, LocalLastChangedAt;
+  field ( mandatory : create ) EmpId, DevId, DevDescription;
+
+ association _UserDeV { create ( features : instance ); }
+
+  action ( features : instance ) uploadExcelData result [1] $self;
+  action ( features : instance ) DownloadExcel result [1] $self;
+
+  determination FillFileStatus on modify { field EmpId, DevId; }
+  determination FillSelectedStatus on modify { field Attachment; }
+
+  side effects {
+    field Attachment affects field FileStatus;
+    action uploadExcelData affects $self, entity _UserDeV;
+  }
+
+  mapping for zcit_excel_ad303
+  {
+    EmpId              = emp_id;
+    DevId              = dev_id;
+    DevDescription     = dev_description;
+    Filename           = filename;
+    Attachment         = attachment;
+    Mimetype           = mimetype;
+    FileStatus         = file_status;
+    TemplateStatus     = template_status;
+    LocalCreatedBy     = local_created_by;
+    LocalCreatedAt     = local_created_at;
+    LastChangedAt      = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+    LocalLastChangedBy = local_last_changed_by;
+  }
+}
+
+define behavior for ZCIT_I_USER_AD303 alias UserDeV
+persistent table zcit_user_ad303
+lock dependent by _User
+authorization dependent by _User
+{
+  update;
+  delete;
+
+  field ( readonly ) EmpId, DevId, SerialNo;
+
+  association _User;
+
+  mapping for zcit_user_ad303
+  {
+    EmpId      = emp_id;
+    DevId      = dev_id;
+    SerialNo   = serial_no;
+    ObjectType = object_type;
+    ObjectName = object_name;
+  }
+}

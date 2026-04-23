@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service Definition  DOWNLOAD'
+define service ZCIT_SERVICE_EXCEL_303 {
+  expose zcit_c_excel_ad303;
+  expose zcit_c_user_ad303;
+}
